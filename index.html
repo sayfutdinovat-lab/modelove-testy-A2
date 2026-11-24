@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Модельные тесты А2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Playfair+Display:ital,wght@1,700&family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, encouraging teacher — calm exam practice, no stress
+   IDEA: an exam booklet with pink tabs, Tanya's slide style (pink band, white cards)
+   PICTURE: the working test itself — tabs, tasks, play buttons, live score
+   COLOUR and TYPE: Tanya's brand pink #DC688F, white cards, graphite; Montserrat + Inter
+   LAYOUT: pink header band, sticky part tabs, one calm 860px column */
+:root{color-scheme:light dark;
+--bg:light-dark(#FBF1F4,#1C1418);--card:light-dark(#fff,#291D23);--ink:light-dark(#232326,#F3E9EE);
+--mute:light-dark(#6E6469,#B9A9B1);--pink:#DC688F;--pinkd:light-dark(#C2507A,#EE8AAE);--soft:light-dark(#F7D3E0,#4A2A38);
+--line:light-dark(#F0CBD8,#46323C);--ok:light-dark(#1E7B4F,#5FD39A);--okbg:light-dark(#E3F5EC,#16352A);--bad:light-dark(#B3263E,#FF8A9D);--badbg:light-dark(#FBE4E8,#3E1A22);--dark:#2B2B2E}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.tab,.ttab,.btn{font-family:Montserrat,Inter,sans-serif}
+.hero{background:#ED5F90;color:#fff;padding:clamp(28px,5vw,56px) max(5vw,16px) 0;position:relative;overflow:hidden}
+.hero img.map{position:absolute;left:50%;top:50%;width:min(1100px,130vw);transform:translate(-50%,-50%);opacity:.32;pointer-events:none}
+.hgrid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:28px;align-items:center;margin-bottom:22px!important}
+.handle{font:800 clamp(18px,2.6vw,26px)/1.1 Montserrat,sans-serif;margin:0!important;opacity:1!important}
+.me{margin:0;justify-self:end;text-align:center}.me figcaption{display:inline-block;margin-top:-18px;position:relative;background:#4C2032;color:#fff;font:700 15px Inter;padding:6px 12px;border-radius:8px;white-space:nowrap}.me img{display:block;width:210px;height:210px;object-fit:cover;object-position:50% 18%;border-radius:50%;border:6px solid #fff;box-shadow:0 14px 30px rgba(120,20,60,.25)}
+@media(max-width:640px){.hgrid{grid-template-columns:minmax(0,1fr);gap:14px}.me{order:-1;justify-self:start;display:flex;align-items:center;gap:12px}.me img{width:84px;height:84px;border-width:4px}.me figcaption{margin:0;font-size:14px}h1{white-space:normal}}
+.hero .in{max-width:860px;margin:0 auto;position:relative}
+.tag{display:inline-block;background:#4C2032;color:#fff;font:700 15px Inter;padding:6px 12px;border-radius:8px}
+h1{font-size:clamp(28px,4.6vw,50px);line-height:1.05;margin:14px 0 2px;white-space:nowrap}
+.hero .sub{font:italic 700 clamp(24px,3.4vw,36px)/1.15 "Playfair Display",Georgia,serif;color:#F1E3C7;margin:0 0 14px}
+.hero p{margin:0 0 22px;max-width:620px;opacity:.95}
+.ttabs{display:flex;gap:10px;flex-wrap:wrap}
+.ttab{border:0;cursor:pointer;background:rgba(255,255,255,.22);color:#fff;font-weight:700;font-size:16px;padding:14px 20px;border-radius:16px 16px 0 0;min-height:48px}
+.ttab small{display:block;font:500 13px Inter;opacity:.9}
+.ttab.on{background:var(--bg);color:var(--ink)}
+.hero .tag{margin-top:2px}
+.ptabs{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.ptabs .in{max-width:860px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px max(5vw,16px) 10px}
+.tab{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;min-height:44px}
+.tab.on{background:var(--pink);border-color:var(--pink);color:#fff}
+main{max-width:860px;margin:0 auto;padding:22px max(5vw,16px) 60px}
+.phead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.phead h2{font-size:clamp(24px,3.5vw,32px);margin:0;line-height:1.1}
+.meta{color:var(--mute);font-size:14px}
+.card{background:var(--card);border-radius:20px;padding:clamp(18px,3vw,28px);margin:0 0 16px;box-shadow:0 1px 0 var(--line)}
+.card h3{font-size:18px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pts{background:var(--pink);color:#fff;font:700 13px Inter;padding:3px 9px;border-radius:6px}
+.instr{margin:0 0 4px;font-weight:600}
+.ru{color:var(--mute);font-size:14px;font-style:italic;margin:0 0 14px}
+.text{background:light-dark(#FCF4F7,#241A1F);border-left:4px solid var(--pink);border-radius:10px;padding:14px 16px;margin:0 0 16px;white-space:pre-line}
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
+.pool li{border:1.5px dashed var(--line);border-radius:12px;padding:8px 12px;font-size:15px}
+.pool b{color:var(--pinkd)}
+.pics{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+.pic{background:light-dark(#FCF4F7,#241A1F);border-radius:14px;padding:8px 12px;text-align:center;min-width:76px}
+.pic .e{font-size:34px;line-height:1.2}.pic .k{font:700 14px Montserrat;color:var(--pinkd)}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:12px 0;border-top:1px dashed var(--line)}
+.item:first-of-type{border-top:0}
+.num{font:800 16px Montserrat;color:var(--pinkd);min-width:28px;padding-top:2px}
+.q{font-weight:600}
+
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0}
+.opt span{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;cursor:pointer;min-height:44px;background:var(--card)}
+.opt input:checked+span{border-color:var(--pink);background:var(--soft)}
+.opt input:focus-visible+span{outline:3px solid var(--pink);outline-offset:2px}
+.opt span b{color:var(--pinkd)}
+select,input[type=text],textarea{font:16px Inter;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:44px}
+select{margin-top:6px;min-width:110px}
+input[type=text]{width:min(100%,320px);margin-top:6px}
+textarea{width:100%;min-height:150px;resize:vertical;margin-top:8px;line-height:1.5}
+select:focus,input:focus,textarea:focus{outline:3px solid var(--pink);outline-offset:1px;border-color:var(--pink)}
+.res{grid-column:2;font-size:14px;font-weight:600;display:none}
+.checked .res{display:block}
+.item.ok .res{color:var(--ok)}.item.bad .res{color:var(--bad)}
+.item.ok{background:linear-gradient(90deg,var(--okbg),transparent 70%)}.item.bad{background:linear-gradient(90deg,var(--badbg),transparent 70%)}
+.play{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--dark);color:#fff;border-radius:999px;padding:9px 16px;font:700 14px Inter;cursor:pointer;min-height:44px;margin:6px 0}
+.play[disabled]{opacity:.45;cursor:not-allowed}
+.play.on{background:var(--pink)}
+details.tr{margin-top:6px;font-size:14px;color:var(--mute)}
+details.tr summary{cursor:pointer;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:13px 22px;font-weight:700;font-size:15px;cursor:pointer;min-height:48px;text-decoration:none}
+.btn.p{background:var(--pink);color:#fff}.btn.s{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn.tg{background:#229ED9;color:#fff}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.score{font:800 22px Montserrat}
+.timer{font:700 15px Inter;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:44px;font-variant-numeric:tabular-nums}
+.timer.run{background:var(--dark);color:#fff;border-color:var(--dark)}
+.wc{font-size:14px;font-weight:600;margin-top:4px}
+.wc.ok{color:var(--ok)}.wc.low{color:var(--bad)}
+.note{background:var(--soft);border-radius:14px;padding:12px 16px;font-size:15px;margin:0 0 16px}
+.role{border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0}
+.role ul,.card ul{margin:6px 0 0;padding-left:20px}
+.meter{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 2px;position:relative}
+.meter i{display:block;height:100%;background:var(--pink);border-radius:99px}
+.meter u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);left:60%}
+.rrow{margin:0 0 16px}
+.rrow .l{display:flex;justify-content:space-between;gap:8px;font-weight:600;flex-wrap:wrap}
+.status{font-size:14px;font-weight:600;color:var(--ok);min-height:1.4em}
+.ill{margin:0;text-align:center}.ill svg{display:block;width:100%;height:auto;border-radius:14px}
+.ill figcaption{font:700 13px Inter;color:var(--pinkd);margin-top:4px}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin:0 0 16px}
+.pics.story{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.itimg{width:150px;margin-bottom:4px}
+.photo{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);background:#fff}
+.cz-note{margin:10px 0 0;font-size:15px}
+.karta{border:3px solid light-dark(#D9D3D6,#4A3A42);border-radius:26px;overflow:hidden;margin:14px 0;background:var(--card)}
+.karta .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 18px}
+.karta .top p{margin:10px 0 0;font-size:17px}
+.karta .scene{display:block;width:min(100%,360px);height:auto;border-radius:12px}
+.karta .kb{flex:none;background:light-dark(#D9D3D6,#4A3A42);color:#fff;font:800 17px Montserrat;border-radius:12px;padding:7px 12px}
+.karta .bot{background:light-dark(#ECE8EA,#33282D);border-top:3px solid light-dark(#D9D3D6,#4A3A42);padding:16px 22px 18px}
+.karta h4{margin:0 0 8px;text-align:center;font:700 18px Inter}
+.karta ul{list-style:square;margin:0;padding-left:22px}.karta li{font-size:19px;font-weight:600;line-height:1.5}
+.kbd{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.kbd .k{min-width:40px;min-height:40px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:600 17px Inter;cursor:pointer}
+.kbd .k:hover{border-color:var(--pink)}.kbd .sh{background:var(--soft)}.kbd.up .sh{background:var(--pink);color:#fff;border-color:var(--pink)}
+table.hist{width:100%;border-collapse:collapse;font-size:15px}.hist th:nth-child(n+3){text-align:right}.hist th,.hist td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}.hist .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.okc{color:var(--ok);font-weight:700}.badc{color:var(--bad);font-weight:700}
+@media(max-width:600px){.karta .top{flex-direction:column-reverse}.itimg{width:130px}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:6em;text-align:start!important}.stack td::before{content:attr(data-l);float:inline-start;width:5.5em;margin-inline-start:-6em}}
+.btn.big{background:#ED5F90;color:#fff;font-size:17px;padding:16px 26px;min-height:56px;border-radius:16px;box-shadow:0 8px 0 #4C2032;transition:transform .12s}
+.btn.big:hover{transform:translateY(-2px)}.btn.big:active{transform:translateY(4px);box-shadow:0 4px 0 #4C2032}
+.cta{background:#4C2032;color:#fff;border-radius:22px;padding:clamp(20px,3vw,30px);margin:0 0 16px;display:grid;gap:14px}
+.cta h3{margin:0 0 6px;font-size:22px}.cta p{margin:0;opacity:.92}
+.cta .ctaname span{display:block;font-weight:600;font-size:14px;margin-bottom:4px}.cta input{background:#fff;color:#232326;border-color:transparent;margin:0}
+.cta .btn.big{justify-self:start;box-shadow:0 8px 0 #2A0F1B}.cta .status{color:#F1E3C7}
+footer{max-width:860px;margin:0 auto;padding:0 max(5vw,16px) 50px;color:var(--mute);font-size:14px}
+footer a{color:var(--pinkd)}
+@media(max-width:600px){.ttab{flex:1 1 0;padding:12px 14px}.big{font-size:34px}}
+@media(prefers-reduced-motion:no-preference){.card{animation:up .35s ease both}@keyframes up{from{opacity:0;transform:translateY(8px)}}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <img class="map" src="img/cz-map.png" alt="" aria-hidden="true">
+  <div class="in hgrid"><div class="htext">
+    <span class="tag">#modelové testy</span>
+    <h1>Экзамен А2 для ПМЖ:</h1>
+    <p class="sub">попробуйте оба формата</p>
+    <p>Два полных пробных теста: государственный и языковой CCE. Все четыре части, автопроверка чтения и аудирования, а письменную часть можно отправить Татьяне на проверку.</p>
+    </div><figure class="me"><img src="img/tatiana.jpg" alt="Tatiana Sayfutdinova"><figcaption>@tatiana.sayfutdinova</figcaption></figure></div>
+    <div class="in"><div class="ttabs" role="tablist">
+      <button class="ttab" data-t="tp" role="tab">Государственный<small>trvalý pobyt</small></button>
+      <button class="ttab" data-t="cce" role="tab">Языковой CCE<small>ÚJOP UK</small></button>
+    </div></div>
+  </div>
+</header>
+<nav class="ptabs"><div class="in" id="ptabs"></div></nav>
+<main id="main"></main>
+<footer>
+  <p>Задания оригинальные и составлены по формату официальных модельных тестов. Официальные варианты: <a href="https://cestina-pro-cizince.cz/trvaly-pobyt/wp-content/uploads/2026/01/A2_Modelovy_test_1.pdf" target="_blank" rel="noopener">госэкзамен (PDF)</a> · <a href="https://arche.is.cuni.cz/images/zkousky/dokumenty/CCE-A2_MODELOV%C3%81_VARIANTA_2026.pdf" target="_blank" rel="noopener">CCE (PDF)</a>.</p>
+  <p>Аудио озвучивает чешский голос вашего браузера. Вопросы и запись на экзамен: <a href="https://t.me/tatiana_sayfutdinova" target="_blank" rel="noopener">t.me/tatiana_sayfutdinova</a> · @tatiana.sayfutdinova</p>
+</footer>
+
+<script src="ill.js"></script>
+<script>
+{
+const TG='https://t.me/tatiana_sayfutdinova';
+/* URL веб-приложения Google Apps Script (статистика). Пусто = статистика выключена. */
+const SHEET_URL='https://script.google.com/macros/s/AKfycbw9_BX-0-t4SwZjMrEnal6Wfdb18jwdpvPNGtsQe-BaLQ9TkBktV36qaxjo1tZKdB35xw/exec';
+const TCODE={tp:'TP',cce:'CCE'};
+let VID='';try{VID=localStorage.getItem('a2m:vid')||'';if(!VID){VID=Math.random().toString(36).slice(2,10);localStorage.setItem('a2m:vid',VID)}}catch(e){VID='anon'}
+function track(ev,d){if(!SHEET_URL)return;try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({ev,vid:VID},d))}).catch(()=>{})}catch(e){}}
+const opened={};
+const esc0=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pic=(n,cap)=>`<figure class="ill"><svg viewBox="0 0 160 120" role="img" aria-label="${esc0(cap||n)}"><rect width="160" height="120" rx="14" fill="#FDF0F4"/>${ILL[n]||''}</svg>${cap?`<figcaption>${esc0(cap)}</figcaption>`:''}</figure>`;
+const scene=n=>`<svg class="scene" viewBox="0 0 320 180" role="img" aria-label="${n}">${SCENE[n]}</svg>`;
+const karta=(no,sc,txt,qs)=>`<div class="karta"><div class="top"><div>${scene(sc)}<p>${txt}</p></div><span class="kb">${no}</span></div><div class="bot"><h4>Zeptejte se na 4 informace:</h4><ul>${qs.map(q=>`<li>${q}</li>`).join('')}</ul></div></div>`;
+const CZ='áčďéěíňóřšťúůýž';
+const kbd=()=>`<div class="kbd" aria-label="České znaky"><button type="button" class="k sh" data-sh="1" aria-label="Velká písmena">⇧</button>${CZ.split('').map(c=>`<button type="button" class="k" data-ch="${c}">${c}</button>`).join('')}</div>`;
+const L='ABCDEFGH';
+const TESTS={
+tp:{name:'Государственный экзамен (ПМЖ)',parts:[
+{id:'cteni',title:'Čtení',ru:'Чтение',time:40,max:25,tasks:[
+ {n:1,pts:5,instr:'Přiřaďte k obrázkům 1–5 správnou informaci A–H. Tři informace nepasují.',
+  pool:['Tady si můžete koupit léky i bez receptu.','Psi musí mít vodítko i náhubek.','Půjčte si ho na celý den jen za 200 Kč. Helma zdarma.','Balíky vydáváme jen do 17:00.','Vstup jen v plavkách a s koupací čepicí.','Dnes zavřeno – v kuchyni pracujeme.','Parkování jen pro zákazníky.','Lístky na koncert prodáváme v pokladně.'],
+  items:[{img:'bike',t:'sel',a:'C'},{img:'pills',t:'sel',a:'A'},{img:'post',t:'sel',a:'D'},{img:'dog',t:'sel',a:'B'},{img:'pool',t:'sel',a:'E'}]},
+ {n:2,pts:5,instr:'Přečtěte si e-mail. Vyberte správnou odpověď A–D.',
+  text:'Milí rodiče,\nv pátek 15. května jede třída 3.B na výlet do Kutné Hory. Sraz je v 7:30 před školou, autobus odjíždí v 7:45. Vrátíme se asi v 17 hodin.\nDopoledne navštívíme chrám svaté Barbory, odpoledne půjdeme do muzea stříbra. Oběd bude v restauraci a stojí 150 Kč.\nDěti si musí vzít pohodlné boty, pláštěnku a pití. Mobilní telefony nejsou potřeba.\nVýlet stojí 350 Kč. Peníze pošlete na účet školy do pondělí 11. května.\nDěkuji, Jana Novotná, třídní učitelka',
+  items:[{q:'Kdy mají děti přijít ke škole?',t:'mc',o:['v 7:00','v 7:30','v 7:45','v 8:00'],a:1},
+   {q:'Co budou děti dělat odpoledne?',t:'mc',o:['Půjdou do chrámu.','Budou obědvat ve škole.','Navštíví muzeum.','Pojedou domů.'],a:2},
+   {q:'Kolik stojí oběd?',t:'mc',o:['100 Kč','150 Kč','350 Kč','500 Kč'],a:1},
+   {q:'Co si děti NEmusí vzít?',t:'mc',o:['boty','pláštěnku','pití','mobil'],a:3},
+   {q:'Do kdy musí rodiče zaplatit výlet?',t:'mc',o:['do pátku 15. 5.','do pondělí 11. 5.','do 17 hodin','do konce měsíce'],a:1}]},
+ {n:3,pts:4,instr:'Přečtěte si inzeráty 11–14. Ke každému inzerátu vyberte osobu A–E. Jedna osoba nepasuje.',
+  pool:['Petr hledá práci o víkendu, protože přes týden studuje.','Marie chce zhubnout a hledá sport pro začátečníky.','Pan Dvořák chce prodat své staré auto.','Lucie hledá levný byt blízko centra.','Tomáš se chce naučit vařit.'],
+  items:[{q:'Pronajmu 1+kk, 5 minut pěšky od Václavského náměstí. 9 000 Kč měsíčně včetně energií.',t:'sel',a:'D'},
+   {q:'Restaurace U Lípy hledá pomocníka do kuchyně. Pracovní doba: sobota a neděle 10–18 h.',t:'sel',a:'A'},
+   {q:'Nový kurz jógy pro úplné začátečníky! Každé úterý a čtvrtek v 18:00. První lekce zdarma.',t:'sel',a:'B'},
+   {q:'Kurz italské kuchyně: naučíme vás připravit pizzu, těstoviny i tiramisu. 4 lekce, 2 500 Kč.',t:'sel',a:'E'}]},
+ {n:4,pts:6,instr:'Vyberte správné slovo A–D.',
+  items:[{q:'Ahoj Pavle, dnes nemůžu přijít, protože jsem ___. Zavolám zítra. Jirka',t:'mc',o:['nemocný','nemocné','nemocnou','nemocném'],a:0},
+   {q:'Vážení zákazníci, obchod je zavřený ___ 24. do 26. prosince.',t:'mc',o:['od','do','na','v'],a:0},
+   {q:'Mami, koupila jsem chleba, ale zapomněla jsem ___ mléko.',t:'mc',o:['koupit','koupila','koupím','kupuje'],a:0},
+   {q:'Hledáme kolegu, který umí dobře ___ česky.',t:'mc',o:['mluví','mluvit','mluvil','mluvte'],a:1},
+   {q:'Vlak do Brna dnes jede o 20 minut ___.',t:'mc',o:['později','pozdě','pozdní','pozdější'],a:0},
+   {q:'Klíče od pokoje si vyzvedněte ___ recepci.',t:'mc',o:['na','v','do','u'],a:0}]},
+ {n:5,pts:5,instr:'Doplňte do textu jedno slovo.',
+  text:'Městský bazén – informace\nBazén je otevřený každý den (21) ___ 8 do 21 hodin. Vstupenka pro dospělé stojí 120 korun, děti (22) ___ 15 let platí jen 60 korun. Vstupenky si můžete koupit v pokladně (23) ___ na internetu. Ručník si musíte přinést s (24) ___. Těšíme se (25) ___ vás!',
+  items:[{q:'(21)',t:'open',a:['od']},{q:'(22)',t:'open',a:['do']},{q:'(23)',t:'open',a:['nebo']},{q:'(24)',t:'open',a:['sebou']},{q:'(25)',t:'open',a:['na']}]}
+]},
+{id:'psani',title:'Psaní',ru:'Письмо',time:25,max:20,kind:'write',tasks:[
+ {n:1,pts:8,instr:'Vyplňte online přihlášku do jazykové školy. Odpovězte na otázky celými větami. Každá odpověď musí mít minimálně 10 slov.',
+  fields:[{q:'Proč se chcete učit česky?',min:10},{q:'Kdy máte čas na kurz (dny a hodiny)?',min:10},{q:'Co děláte rád / ráda ve volném čase?',min:10}]},
+ {n:2,pts:12,instr:'Chcete si rezervovat pokoj v hotelu. Napište e-mail do hotelu. Ke každému obrázku napište minimálně jednu větu. E-mail musí mít minimálně 35 slov.',
+  pics:[['calendar','2 noci, 3.–5. 6.'],['family','3 osoby'],['parking','parkování?'],['dog','pes'],['breakfast','snídaně']],
+  fields:[{q:'E-mail do hotelu',min:35,big:true}]}
+]},
+{id:'poslech',title:'Poslech',ru:'Аудирование',time:40,max:25,tasks:[
+ {n:1,pts:5,instr:'Uslyšíte 5 krátkých dialogů. Každý dialog uslyšíte dvakrát. Vyberte správnou odpověď A–D.',
+  items:[{q:'Kde se sejdou?',t:'mc',o:['před kinem','u metra','v kavárně','u školy'],a:1,au:[['Ž','Ahoj Petře, půjdeme zítra do kina?'],['M','Jo, rád. Sejdeme se před kinem?'],['Ž','Ne, radši u metra na Můstku, je to blíž.'],['M','Dobře, tak v šest u metra.']]},
+   {q:'Co si muž koupí?',t:'mc',o:['chleba a mléko','rohlíky a chleba','rohlíky a mléko','jen mléko'],a:2,au:[['M','Dobrý den, chtěl bych dva rohlíky a jeden chleba.'],['Ž','Chleba už bohužel nemáme.'],['M','Tak jen ty rohlíky a ještě mléko, prosím.']]},
+   {q:'V kolik hodin půjde žena k lékaři?',t:'mc',o:['v 9:00','v 9:15','v 10:15','v 11:00'],a:2,au:[['Ž','Dobrý den, mám objednávku na devět hodin, ale nemůžu přijít.'],['M','Můžete přijít ve čtvrt na jedenáct?'],['Ž','To je dobré, děkuju.']]},
+   {q:'Jaké počasí bude zítra?',t:'mc',o:['bude slunečno','bude pršet','bude sněžit','bude teplo'],a:1,au:[['M','Vezmi si zítra deštník.'],['Ž','Proč? Dneska je tak hezky.'],['M','Ale v rádiu říkali, že zítra bude celý den pršet a bude zima.']]},
+   {q:'Kolik stojí lístek?',t:'mc',o:['108 Kč','180 Kč','320 Kč','380 Kč'],a:1,au:[['Ž','Jeden lístek na vlak do Plzně, prosím.'],['M','Tam i zpátky?'],['Ž','Ne, jen tam.'],['M','To je sto osmdesát korun. Zpáteční by byl za tři sta dvacet.']]}]},
+ {n:2,pts:5,instr:'Uslyšíte 5 hlášení a krátkých textů. Vyberte správnou odpověď A–D.',
+  items:[{q:'Co platí o vlaku do Ostravy?',t:'mc',o:['Je zrušený.','Přijede o 10 minut později.','Odjede dřív.','Přijede k prvnímu nástupišti.'],a:1,au:[['','Vážení cestující, vlak do Ostravy přijede k druhému nástupišti s desetiminutovým zpožděním.']]},
+   {q:'Na co je dnes sleva?',t:'mc',o:['na maso','na pečivo','na ovoce a zeleninu','na mléčné výrobky'],a:2,au:[['','Milí zákazníci, dnes máme slevu na všechno ovoce a zeleninu. Jablka stojí jen dvacet pět korun za kilo.']]},
+   {q:'Kdy bude ordinace zase otevřená?',t:'mc',o:['zítra','tento týden','od 12. srpna','v pátek'],a:2,au:[['','Dobrý den, tady ordinace doktorky Malé. Tento týden máme dovolenou. Ordinujeme zase od pondělí dvanáctého srpna.']]},
+   {q:'Co je pravda?',t:'mc',o:['Muzeum je dnes zavřené.','Pokladna už je zavřená.','Muzeum zavírá za hodinu.','Vstup je zdarma.'],a:1,au:[['','Upozorňujeme návštěvníky, že muzeum zavírá za patnáct minut. Pokladna je už zavřená.']]},
+   {q:'Co mají řidiči udělat?',t:'mc',o:['jet pomaleji','zastavit','jet jinou cestou','zavolat policii'],a:2,au:[['','Na dálnici D1 u Brna je nehoda. Řidiči, jeďte prosím jinou cestou.']]}]},
+ {n:3,pts:5,instr:'Uslyšíte 5 lidí. O jakém sportu mluví? Vyberte A–G. Dva sporty nepasují.',
+  pool:['plavání','fotbal','tenis','lyžování','jóga','běhání','hokej'],
+  items:[{t:'sel',a:'A',au:[['Ž','Chodím do bazénu třikrát týdně. Voda mě uklidňuje.']]},
+   {t:'sel',a:'F',au:[['M','Každé ráno běžím pět kilometrů v parku. Nepotřebuju nic, jen dobré boty.']]},
+   {t:'sel',a:'D',au:[['Ž','V zimě jezdíme s rodinou do Alp. Na horách mám nejradši čerstvý sníh.']]},
+   {t:'sel',a:'C',au:[['M','Hraju ve dvojici s kamarádem. Potřebujeme raketu a míček.']]},
+   {t:'sel',a:'E',au:[['Ž','Cvičím doma na podložce. Pomáhá mi to s bolestí zad a lépe dýchám.']]}]},
+ {n:4,pts:5,instr:'Uslyšíte 5 dialogů. Ke každému dialogu vyberte obrázek A–F. Jeden obrázek nepasuje.',
+  pics:[['cake','A'],['umbrella','B'],['keys','C'],['tickets','D'],['taxi','E'],['books','F']],poolKeys:'ABCDEF',
+  items:[{t:'sel',a:'C',au:[['Ž','Kde máš klíče?'],['M','Nevím, asi jsem je nechal v kanceláři.']]},
+   {t:'sel',a:'A',au:[['M','Co koupíme babičce k narozeninám?'],['Ž','Upečeme jí čokoládový dort.']]},
+   {t:'sel',a:'E',au:[['Ž','Jak pojedeme na letiště?'],['M','Je pozdě, autobus už nejede. Zavoláme taxi.']]},
+   {t:'sel',a:'D',au:[['M','Máš lístky na koncert?'],['Ž','Ano, koupila jsem je včera na internetu.']]},
+   {t:'sel',a:'B',au:[['Ž','Prší, vezmi si něco s sebou.'],['M','Dobře, vezmu si deštník.']]}]},
+ {n:5,pts:5,instr:'Uslyšíte zprávu na záznamníku. Doplňte informace.',
+  au:[['M','Ahoj Kláro, tady Martin. Chtěl jsem ti říct o tom kurzu angličtiny. Začíná v úterý patnáctého října. Lekce jsou vždycky od šesti do půl osmé večer. Kurz stojí čtyři tisíce korun. Učitelka se jmenuje Smithová, to se píše S, M, I, T, H, O, V, Á. A kdybys měla otázky, zavolej do školy na číslo šest set dva, tři sta patnáct, čtyři sta čtyřicet osm. Ahoj!']],
+  items:[{q:'Kurz začíná v ___ 15. října.',t:'open',a:['úterý','utery','vúterý']},
+   {q:'Lekce jsou od 18:00 do ___.',t:'open',a:['1930','půlosmé','půlosmou','pulosme','1930hodin']},
+   {q:'Kurz stojí ___ Kč.',t:'open',a:['4000','čtyřitisíce']},
+   {q:'Učitelka: paní ___',t:'open',a:['smithová','smithova']},
+   {q:'Telefon do školy: ___',t:'open',a:['602315448']}]}
+]},
+{id:'mluveni',title:'Mluvení',ru:'Говорение',time:15,max:40,kind:'speak',tasks:[
+ {n:1,pts:8,instr:'Odpovězte na otázky ke dvěma tématům.',
+  html:'<div class="role"><b>Bydlení</b><ul><li>Kde bydlíte?</li><li>Jaký je váš byt nebo dům?</li><li>S kým bydlíte?</li><li>Co se vám na vašem bydlení líbí?</li></ul></div><div class="role"><b>Volný čas</b><ul><li>Co děláte o víkendu?</li><li>Sportujete?</li><li>Kam jezdíte na dovolenou?</li><li>Jakou hudbu posloucháte?</li></ul></div>'},
+ {n:2,pts:12,instr:'Hrajete dvě situace. Zeptejte se na 4 informace podle kartičky. Poslední otázku vymyslete sami.',
+  html:karta('KARTA 1','station','Jste na <b>Hlavním nádraží v Praze.</b><br>Chcete jet vlakem do Brna.',['Cena lístku?','Odjezd vlaku?','Nástupiště?','…? (vaše otázka)'])+karta('KARTA 2','shop','Jste <b>v obchodě s oblečením.</b><br>Chcete si koupit nové tričko.',['Jiná velikost?','Jiná barva?','Platba kartou?','…? (vaše otázka)'])},
+ {n:3,pts:10,instr:'Podívejte se na obrázky a vyprávějte příběh v minulém čase.',
+  html:'<div class="pics story">'+[['sleep','1'],['run','2'],['bus','3'],['taxi','4']].map(([n,k])=>pic(n,k)).join('')+'</div>'},
+ {n:4,pts:7,instr:'Mluvíte s kamarádem. Vyberte spolu dárek pro kamarádku a řekněte proč.',
+  html:'<div class="pics">'+[['flowers','A'],['book','B'],['choco','C']].map(([n,k])=>pic(n,k)).join('')+'</div>'},
+]}
+]},
+cce:{name:'Языковой экзамен CCE',parts:[
+{id:'cteni',title:'Čtení',ru:'Чтение',time:40,max:20,tasks:[
+ {n:1,pts:6,instr:'Přečtěte si text. Je to pravda (ANO), nebo ne (NE)?',
+  text:'Jmenuji se Olga a bydlím v Praze už tři roky. Pracuju jako zdravotní sestra v nemocnici na Karlově náměstí. Do práce jezdím tramvají, cesta trvá dvacet minut. Pracuju na směny, proto mám někdy volno ve středu nebo ve čtvrtek. Ve volném čase ráda chodím na procházky s naším psem Rexem. O víkendu často jezdím s manželem na chatu na Šumavu. Tam nemáme internet, ale to nám nevadí. Příští rok chceme koupit větší byt, protože čekáme dítě.',
+  items:[{q:'Olga bydlí v Praze pět let.',t:'tf',a:false},{q:'Olga pracuje v nemocnici.',t:'tf',a:true},{q:'Do práce jezdí autem.',t:'tf',a:false},{q:'Olga má někdy volno ve všední den.',t:'tf',a:true},{q:'Na chatě mají rychlý internet.',t:'tf',a:false},{q:'Olga a její manžel chtějí větší byt.',t:'tf',a:true}]},
+ {n:2,pts:6,instr:'Přečtěte si texty A–D. Ve kterém textu najdete informaci 7–12?',
+  pool:['Kavárna Modrá kočka: Nabízíme domácí koláče a výbornou kávu. Otevřeno denně 8–20. U nás můžete pracovat na počítači, Wi-Fi je zdarma. Psi jsou vítáni.','Prodám dětské kolo, 3 roky staré, modré. Cena 1 500 Kč. Volejte po 17. hodině na 731 222 104.','Knihovna oznamuje: Od 1. září máme novou otevírací dobu: pondělí–pátek 9–19. V sobotu je zavřeno. Knihy můžete vracet i do boxu před budovou.','Hledáme chůvu pro dvě děti (4 a 7 let) na tři odpoledne týdně. Nutná je dobrá čeština a zkušenosti s dětmi. Nabízíme 200 Kč na hodinu.'],
+  items:[{q:'Můžete tam přijít se zvířetem.',t:'sel',a:'A'},{q:'Volat můžete až odpoledne.',t:'sel',a:'B'},{q:'V sobotu tam nemůžete.',t:'sel',a:'C'},{q:'Je to nabídka práce.',t:'sel',a:'D'},{q:'Internet tam je zadarmo.',t:'sel',a:'A'},{q:'Věci můžete vrátit, i když je zavřeno.',t:'sel',a:'C'}]},
+ {n:3,pts:5,instr:'Přečtěte si e-mail. Vyberte správnou odpověď A–C.',
+  text:'Ahoj Ireno,\nmám pro tebe velkou novinu! Od března mám novou práci. Pracuju v cestovní kanceláři v centru Brna. Dřív jsem pracoval v bance, ale ta práce mě nebavila, protože jsem celý den seděl u počítače. Teď mluvím s klienty, plánuju jim dovolené a dvakrát za rok můžu sám jet na služební cestu. V červnu poletím do Řecka, abych zkontroloval nový hotel pro naše zákazníky.\nPlat je trochu nižší než v bance, ale jsem mnohem spokojenější. Jediný problém je, že v létě máme hodně práce a nemůžu mít dovolenou. Proto si vezmu volno až v říjnu. Nechceš jet se mnou na týden do Itálie? Moje kolegyně říká, že v říjnu je tam ještě teplo a není tam tolik turistů. Napiš mi, jestli máš čas.\nMěj se hezky,\nDaniel',
+  items:[{q:'Kde Daniel pracoval dřív?',t:'mc',o:['v cestovní kanceláři','v bance','v hotelu'],a:1},
+   {q:'Proč změnil práci?',t:'mc',o:['Chtěl vyšší plat.','Stará práce ho nebavila.','Přestěhoval se do Brna.'],a:1},
+   {q:'Proč poletí do Řecka?',t:'mc',o:['na dovolenou','zkontrolovat hotel','navštívit kolegyni'],a:1},
+   {q:'Jaký je jeho nový plat?',t:'mc',o:['vyšší než dřív','stejný','nižší než dřív'],a:2},
+   {q:'Kdy chce Daniel jet na dovolenou?',t:'mc',o:['v červnu','v létě','v říjnu'],a:2}]},
+ {n:4,pts:3,instr:'Přečtěte si dva texty. Vyberte správnou odpověď A–C.',
+  text:'Text 1 — Upozornění pro nájemníky\nVe čtvrtek 14. 11. od 8 do 12 hodin nepoteče teplá voda. Opravujeme kotel ve sklepě. Děkujeme za pochopení. Správa domu\n\nText 2 — Zpráva\nMilá Simono, dnes nestihnu vyzvednout Aničku ze školky, mám dlouhou poradu. Můžeš pro ni jít ty? Školka zavírá v pět. Díky moc! Eva',
+  items:[{q:'Text 1: Co bude ve čtvrtek?',t:'mc',o:['Nebude teplá voda.','Nebude elektřina.','Budou opravovat výtah.'],a:0},
+   {q:'Text 1: Kde je problém?',t:'mc',o:['v bytě','ve sklepě','na střeše'],a:1},
+   {q:'Text 2: Co chce Eva?',t:'mc',o:['aby Simona šla na poradu','aby Simona vyzvedla Aničku','aby Simona zavolala do školky'],a:1}]}
+]},
+{id:'poslech',title:'Poslech',ru:'Аудирование',time:30,max:20,tasks:[
+ {n:1,pts:7,instr:'Uslyšíte dialog. Je to pravda (ANO), nebo ne (NE)?',
+  au:[['M','Ahoj Jano, co děláš o víkendu?'],['Ž','Ahoj Tomáši. V sobotu dopoledne musím uklízet, protože k nám v neděli přijedou rodiče z Olomouce.'],['M','A odpoledne? Nechceš jít se mnou na výstavu fotografií? Je v Národní galerii a končí příští týden.'],['Ž','To zní dobře. V kolik?'],['M','Myslel jsem ve tři. Vstupenka stojí sto padesát korun, ale studenti mají slevu.'],['Ž','Já už nestuduju, takže zaplatím celou cenu. To nevadí.'],['M','Po výstavě můžeme jít na večeři. Znám novou vietnamskou restauraci blízko galerie.'],['Ž','Vietnamskou kuchyni mám moc ráda. Ale v osm musím být doma, ráno vstávám brzo a jedu na nádraží pro rodiče.'],['M','Dobře, tak večeře v šest. Mám ti zavolat?'],['Ž','Ne, pošli mi zprávu. Celé dopoledne budu luxovat, telefon neuslyším.'],['M','Jasně. Tak v sobotu ve tři před galerií.'],['Ž','Platí. Těším se!']],
+  items:[{q:'Jana bude v sobotu dopoledne uklízet.',t:'tf',a:true},{q:'Janini rodiče přijedou v sobotu.',t:'tf',a:false},{q:'Výstava končí tento týden.',t:'tf',a:false},{q:'Jana má studentskou slevu.',t:'tf',a:false},{q:'Restaurace je blízko galerie.',t:'tf',a:true},{q:'Jana musí být v osm doma.',t:'tf',a:true},{q:'Tomáš má Janě zavolat.',t:'tf',a:false}]},
+ {n:2,pts:5,instr:'Uslyšíte 5 krátkých textů. Odpovězte jedním slovem nebo číslem.',
+  items:[{q:'Od kolika hodin si můžete vyzvednout auto?',t:'open',a:['9','900','devět','devíti','9hodin'],au:[['M','Dobrý den, tady autoservis Novák. Vaše auto je hotové. Můžete si ho vyzvednout zítra od devíti hodin.']]},
+   {q:'Co máte přinést na večírek?',t:'open',a:['salát','salat'],au:[['Ž','Ahoj, tady Lenka. Večírek bude u mě v pátek. Přines prosím salát, o pití se postarám já.']]},
+   {q:'Která linka jede místo linky 22?',t:'open',a:['17','sedmnáct','sedmnáctka'],au:[['','Vážení cestující, linka číslo dvacet dva dnes kvůli opravě nejede. Použijte prosím linku číslo sedmnáct.']]},
+   {q:'Do kterého dne si můžete vyzvednout knihu?',t:'open',a:['čtvrtek','čtvrtka','ctvrtek','doctvrtka','dočtvrtka'],au:[['Ž','Dobrý den, volám z knihovny. Knihu, kterou jste si objednala, máte připravenou. Můžete si pro ni přijít do čtvrtka.']]},
+   {q:'O kolik procent jsou boty levnější?',t:'open',a:['30','30%','třicet'],au:[['','Pozor, v obchodním centru dnes máme slevu na boty. Všechny boty jsou levnější o třicet procent.']]}]},
+ {n:3,pts:4,instr:'Uslyšíte 4 dialogy. Vyberte správnou odpověď A–C.',
+  items:[{q:'Co si žena dá k pití?',t:'mc',o:['kávu','čaj','vodu'],a:1,au:[['M','Co si dáte k pití?'],['Ž','Kávu, prosím.'],['M','Bohužel, kávovar dnes nefunguje.'],['Ž','Tak čaj s citronem.']]},
+   {q:'Kam půjde muž?',t:'mc',o:['na poštu','do lékárny','domů'],a:1,au:[['Ž','Kam jdeš?'],['M','Na poštu, musím poslat balík.'],['Ž','Pošta je dnes zavřená, je svátek.'],['M','Tak půjdu aspoň do lékárny.']]},
+   {q:'Kolik bude stát pokoj?',t:'mc',o:['1 800 Kč','2 100 Kč','2 400 Kč'],a:1,au:[['M','Pokoj pro dva na jednu noc stojí tisíc osm set korun.'],['Ž','A se snídaní?'],['M','Se snídaní dva tisíce sto.'],['Ž','Dobře, tak se snídaní.']]},
+   {q:'Proč žena nemůže přijít na oslavu?',t:'mc',o:['Je nemocná.','Musí pracovat.','Nemá dárek.'],a:1,au:[['M','Přijdeš zítra na oslavu?'],['Ž','Ráda bych, ale musím do práce. Kolegyně je nemocná.']]}]},
+ {n:4,pts:4,instr:'Uslyšíte 4 dialogy. Kde jsou lidé? Vyberte A–F. Dvě místa nepasují.',
+  pool:['v lékárně','v kadeřnictví','na úřadě','v restauraci','v knihkupectví','na nádraží'],
+  items:[{t:'sel',a:'B',au:[['Ž','Krátce, nebo jen trochu zastřihnout?'],['M','Jen konečky, prosím.']]},
+   {t:'sel',a:'C',au:[['M','Potřebuji potvrzení o pobytu.'],['Ž','Vyplňte tento formulář a počkejte, až vás zavoláme.']]},
+   {t:'sel',a:'A',au:[['Ž','Máte něco na kašel?'],['M','Ano, tento sirup. Třikrát denně jednu lžičku.']]},
+   {t:'sel',a:'D',au:[['M','Můžu platit kartou?'],['Ž','Samozřejmě. Bylo všechno v pořádku?'],['M','Ano, ta polévka byla výborná.']]}]}
+]},
+{id:'psani',title:'Psaní',ru:'Письмо',time:40,max:20,kind:'write',tasks:[
+ {n:1,pts:9,instr:'Napište kamarádovi / kamarádce e-mail. Zvete ho / ji na oslavu svých narozenin. Napište: kdy a kde oslava bude, co budete dělat a co má přinést. Minimálně 40 slov.',
+  fields:[{q:'E-mail kamarádovi',min:40,zero:35,big:true}]},
+ {n:2,pts:11,instr:'Napište příspěvek na blog o svém posledním výletu: kam jste jeli, co jste tam dělali, jestli se vám výlet líbil a proč. Minimálně 60 slov.',
+  fields:[{q:'Příspěvek na blog',min:60,zero:54,big:true}]}
+]},
+{id:'mluveni',title:'Mluvení',ru:'Говорение',time:12,max:19,kind:'speak',tasks:[
+ {n:1,pts:5,instr:'Odpovězte na otázky o sobě.',
+  html:'<ul><li>Odkud jste?</li><li>Jak dlouho žijete v Česku?</li><li>Co děláte? Pracujete, nebo studujete?</li><li>Máte sourozence?</li><li>Co děláte rád / ráda ve volném čase?</li><li>Jaké máte plány na léto?</li></ul>'},
+ {n:2,pts:6,instr:'Vyberte si 2 obrázky ze 4 a popište je (asi 1,5 minuty). Potom odpovězte na otázky zkoušejícího.',
+  html:'<img class="photo" src="img/cce-obrazky.jpg" alt="Kartička se 4 obrázky: banka, nákupní košík, pláž u jezera, kavárna" loading="lazy"><p class="cz-note">Možné otázky: Kde jsou lidé? Co dělají? Chodíte rád/a do kavárny? Kde nakupujete? Kam jezdíte v létě?</p>'},
+ {n:3,pts:4,instr:'Formální dialog. Zeptejte se na 5 informací podle obrázků 1–5.',
+  html:'<img class="photo" src="img/cce-dialog-chata.jpg" alt="Dialog – rezervace chaty v Tatrách: termín, počet osob, cena, pokoj, služby" loading="lazy">'}
+]}
+]}};
+
+const NAMES={tp:'Государственный экзамен',cce:'Языковой CCE'};
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const st={get(k,d){try{const v=localStorage.getItem('a2m:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('a2m:'+k,JSON.stringify(v))}catch(e){}}};
+let ans=st.get('ans',{}),scores=st.get('scores',{tp:{},cce:{}}),plays={};
+let cur={t:'tp',p:0};
+const norm=s=>String(s).toLowerCase().replace(/\s+/g,'').replace(/[.,:]/g,'').replace(/kč$/,'');
+const words=s=>s.trim().split(/\s+/).filter(Boolean).length;
+
+/* ---------- speech ---------- */
+let csVoices=[];
+const hasTTS='speechSynthesis' in window;
+function loadVoices(){if(!hasTTS)return;csVoices=speechSynthesis.getVoices().filter(v=>/^cs/i.test(v.lang));const n=$('#ttsnote');if(n)n.hidden=csVoices.length>0}
+if(hasTTS){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function speak(lines,btn){
+  if(!hasTTS){return}
+  speechSynthesis.cancel();
+  document.querySelectorAll('.play.on').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const vM=csVoices.find(v=>/jakub|antonin|male|muž/i.test(v.name))||csVoices[0]||null;
+  const vZ=csVoices.find(v=>/zuzana|iveta|female|žen/i.test(v.name))||csVoices[0]||null;
+  lines.forEach(([sp,tx],i)=>{
+    const u=new SpeechSynthesisUtterance(tx);u.lang='cs-CZ';u.rate=.9;
+    const v=sp==='M'?vM:vZ;if(v)u.voice=v;
+    if(vM===vZ){u.pitch=sp==='M'?.75:sp==='Ž'?1.25:1}
+    if(i===lines.length-1)u.onend=()=>btn.classList.remove('on');
+    speechSynthesis.speak(u);
+  });
+}
+function playBtn(id,lines){
+  const n=plays[id]||0;
+  return `<button class="play" data-play="${id}" ${n>=2?'disabled':''}>▶ Přehrát <span>(${n}/2)</span></button>`+
+  `<details class="tr" data-tr="${id}" hidden><summary>Текст записи</summary>${lines.map(([s,t])=>`<div>${s?'<b>'+s+':</b> ':''}${esc(t)}</div>`).join('')}</details>`;
+}
+const AUDIO={};
+
+/* ---------- render ---------- */
+function render(){
+  document.querySelectorAll('.ttab').forEach(b=>b.classList.toggle('on',b.dataset.t===cur.t));
+  const T=TESTS[cur.t];
+  if(!opened[cur.t]){opened[cur.t]=1;track('открытие',{test:TCODE[cur.t]})}
+  const tabs=[...T.parts.map((p,i)=>`<button class="tab ${i===cur.p?'on':''}" data-p="${i}">${p.title}</button>`),`<button class="tab ${cur.p===T.parts.length?'on':''}" data-p="${T.parts.length}">Výsledek</button>`];
+  $('#ptabs').innerHTML=tabs.join('');
+  stopTimer();
+  if(cur.p===T.parts.length){$('#main').innerHTML=renderResult();return}
+  const P=T.parts[cur.p];
+  let h=`<div class="phead"><div><h2>${P.title}</h2><div class="meta">${P.time} минут · ${P.max} баллов${cur.t==='cce'||P.kind==='speak'?' · нужно минимум 60 %':''}</div></div><button class="timer" id="timer" data-sec="${P.time*60}">⏱ ${fmt(P.time*60)}</button></div>`;
+  if(P.id==='poslech')h+=`<p class="note" id="ttsnote" ${hasTTS&&csVoices.length?'hidden':''}>На вашем устройстве не найден чешский голос. Записи прозвучат другим голосом или не прозвучат совсем. Откройте тест в Chrome или Safari, а после проверки можно прочитать текст записей.</p>`;
+  if(P.kind==='write')h+=renderWrite(P);
+  else if(P.kind==='speak')h+=renderSpeak(P);
+  else h+=P.tasks.map((t,ti)=>renderTask(t,ti)).join('')+`<div class="card"><div class="bar"><button class="btn p" id="check">Проверить ответы</button><button class="btn s" id="reset">Начать заново</button><span class="score" id="score"></span></div></div><div id="ctaslot"></div>`;
+  $('#main').innerHTML=h;
+  if(!P.kind&&scores[cur.t][P.id]!=null&&st.get('shown:'+cur.t+P.id,false))check(false);
+}
+function key(ti,ii){return `${cur.t}-${TESTS[cur.t].parts[cur.p].id}-${ti}-${ii}`}
+function renderTask(t,ti){
+  const P=TESTS[cur.t].parts[cur.p];
+  let h=`<section class="card"><h3>Úloha ${t.n} <span class="pts">${t.pts} b.</span></h3><p class="instr">${esc(t.instr)}</p>`;
+  if(t.au){const id=key(ti,'a');AUDIO[id]=t.au;h+=playBtn(id,t.au)}
+  if(t.text)h+=`<div class="text">${esc(t.text)}</div>`;
+  if(t.pics)h+=`<div class="pics">${t.pics.map(([n,k])=>pic(n,k)).join('')}</div>`;
+  const keys=t.pool?L.slice(0,t.pool.length):(t.poolKeys||'');
+  if(t.pool)h+=`<ul class="pool">${t.pool.map((p,i)=>`<li><b>${L[i]}</b> ${esc(p)}</li>`).join('')}</ul>`;
+  const start=P.tasks.slice(0,ti).reduce((s,x)=>s+x.items.length,0);
+  h+=t.items.map((it,ii)=>{
+    const id=key(ti,ii),v=ans[id];let ctl='';
+    if(it.t==='mc')ctl=`<div class="opts">${it.o.map((o,oi)=>`<label class="opt"><input type="radio" name="${id}" value="${oi}" ${v==oi?'checked':''}><span><b>${L[oi]}</b> ${esc(o)}</span></label>`).join('')}</div>`;
+    else if(it.t==='tf')ctl=`<div class="opts">${['ANO','NE'].map((o,oi)=>`<label class="opt"><input type="radio" name="${id}" value="${oi===0}" ${v===String(oi===0)?'checked':''}><span>${o}</span></label>`).join('')}</div>`;
+    else if(it.t==='sel')ctl=`<select name="${id}" aria-label="Ответ ${start+ii+1}"><option value="">—</option>${keys.split('').map(k=>`<option ${v===k?'selected':''}>${k}</option>`).join('')}</select>`;
+    else ctl=`<input type="text" name="${id}" value="${esc(v||'')}" autocomplete="off" aria-label="Ответ ${start+ii+1}">`;
+    let au='';if(it.au){AUDIO[id+'a']=it.au;au=playBtn(id+'a',it.au)}
+    const q=it.img?`<div class="itimg">${pic(it.img)}</div>`:it.q?`<div class="q">${esc(it.q)}</div>`:'';
+    return `<div class="item" data-k="${id}"><div class="num">${start+ii+1}</div><div>${au}${q}${ctl}</div><div class="res"></div></div>`;
+  }).join('');
+  if(t.items.some(it=>it.t==='open'))h+=kbd();
+  return h+'</section>';
+}
+function renderWrite(P){
+  let h=P.tasks.map((t,ti)=>{
+    let x=`<section class="card"><h3>Úloha ${t.n} <span class="pts">${t.pts} b.</span></h3><p class="instr">${esc(t.instr)}</p>`;
+    if(t.pics)x+=`<div class="pics">${t.pics.map(([n,k])=>pic(n,k)).join('')}</div>`;
+    x+=t.fields.map((f,fi)=>{const id=key(ti,fi),v=ans[id]||'';return `<label style="display:block;margin-top:12px"><span class="q">${esc(f.q)}</span><textarea name="${id}" data-min="${f.min}" data-zero="${f.zero||f.min}" style="${f.big?'':'min-height:84px'}">${esc(v)}</textarea></label><div class="wc" data-wc="${id}"></div>${kbd()}`}).join('');
+    return x+'</section>';
+  }).join('');
+  h+=`<section class="card"><h3>Отправить Татьяне на проверку</h3><p class="meta">Нажмите кнопку: ваш текст и результаты теста скопируются, и откроется чат с Татьяной в Telegram. Просто вставьте текст в сообщение и отправьте.</p>
+  <label><span class="q">Ваше имя</span><br><input type="text" id="sname" value="${esc(st.get('name',''))}" autocomplete="name"></label>
+  <div class="bar" style="margin-top:14px"><a class="btn big" id="send" href="${TG}" target="_blank" rel="noopener">Отправить письмо Татьяне →</a><button class="btn s" id="copy">Только скопировать</button></div>
+  <p class="status" id="status" role="status"></p>
+  <details class="tr"><summary>Показать текст сообщения</summary><textarea id="msg" readonly style="min-height:120px"></textarea></details></section>`;
+  return h;
+}
+function renderSpeak(P){
+  return `<p class="note">Устную часть проводит экзаменатор, поэтому автопроверки здесь нет. Тренируйтесь вслух, можно записать себя на диктофон. Хотите пройти пробное говорение с Татьяной? Напишите ей в <a href="${TG}" target="_blank" rel="noopener" style="color:inherit;font-weight:700">Telegram</a>.</p>`+
+  P.tasks.map(t=>`<section class="card"><h3>Úloha ${t.n} <span class="pts">${t.pts} b.</span></h3><p class="instr">${esc(t.instr)}</p>${t.html}</section>`).join('')+
+  (cur.t==='tp'?`<p class="meta">+ 3 балла за произношение. Нужно минимум 24 из 40.</p>`:`<p class="meta">Нужно минимум 60 % из 19 баллов. 4 балла из них ставятся за всё интервью: взаимодействие, связность и произношение.</p>`);
+}
+function cta(){return `<div class="cta"><div><h3>Бесплатный разбор ошибок 🎁</h3><p>Отправьте свой результат Татьяне в Telegram. Она подскажет, какой экзамен подходит именно вам и над чем стоит поработать.</p></div>
+  <label class="ctaname"><span>Ваше имя</span><input type="text" class="cname" value="${esc(st.get('name',''))}" autocomplete="name" placeholder="Например, Анна"></label>
+  <a class="btn big" data-sendres href="${TG}" target="_blank" rel="noopener">Отправить результат Татьяне →</a><p class="status" role="status"></p></div>`}
+function scoreLine(t){const s=scores[t]||{},P=TESTS[t].parts;return P.filter(p=>!p.kind).map(p=>`${p.title}: ${s[p.id]==null?'не проверено':s[p.id]+'/'+p.max}`).join(', ')}
+function renderHist(){
+  const h=st.get('hist',[]).filter(x=>x.t===cur.t);
+  if(!h.length)return '';
+  const P=Object.fromEntries(TESTS[cur.t].parts.map(p=>[p.id,p.title]));
+  return `<section class="card"><h3>Ваши попытки</h3><p class="meta">История сохраняется только на этом устройстве.</p><table class="stack hist"><thead><tr><th>Дата</th><th>Часть</th><th>Баллы</th><th>%</th></tr></thead><tbody>${h.slice().reverse().map(x=>{const pc=Math.round(x.s/x.m*100);return `<tr><td>${new Date(x.d).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td><td>${esc(P[x.p]||x.p)}</td><td class="n">${x.s} / ${x.m}</td><td class="n ${pc>=60?'okc':'badc'}">${pc} %</td></tr>`}).join('')}</tbody></table><div class="bar" style="margin-top:12px"><button class="btn s" id="clearhist">Очистить историю</button></div></section>`;
+}
+function resMsg(){const name=st.get('name','');let m=`Модельный тест А2 — ${NAMES[cur.t]}\nРезультаты\nИмя: ${name.trim()||'—'}\n${scoreLine(cur.t)}\n`;
+  if(cur.t==='tp'){const s=scores.tp;if(s.cteni!=null&&s.poslech!=null)m+=`Нужно за письмо: ${Math.max(0,42-s.cteni-s.poslech)} из 20\n`}
+  const h=st.get('hist',[]).filter(x=>x.t===cur.t).length;m+=`Попыток проверки: ${h}\n`;return m}
+function meter(lbl,v,max,extra){const pc=max?Math.round(v/max*100):0;return `<div class="rrow"><div class="l"><span>${lbl}</span><span>${v==null?'не проверено':v+' / '+max+' · '+pc+' %'}</span></div><div class="meter"><i style="width:${v==null?0:pc}%"></i><u></u></div>${extra||''}</div>`}
+function renderResult(){
+  const s=scores[cur.t];let h=`<div class="phead"><div><h2>Ваш результат</h2><div class="meta">${NAMES[cur.t]} · черта показывает 60 %</div></div></div><section class="card">`;
+  if(cur.t==='tp'){
+    const r=s.cteni,l=s.poslech;
+    h+=meter('Čtení',r,25)+meter('Poslech',l,25)+meter('Psaní',null,20,'<div class="meta">Проверяет Татьяна</div>');
+    if(r!=null&&l!=null){const need=Math.max(0,42-r-l);
+      h+=`<p class="note">Письменная часть считается <b>вместе</b>: нужно 42 балла из 70. У вас уже ${r+l}. ${need===0?'Порог уже пройден, даже без письма!':need<=20?`Чтобы сдать, за письмо нужно набрать <b>${need} из 20</b>.`:'Даже с максимумом за письмо порог пока не пройден. Подтяните чтение и аудирование.'}</p>`}
+    else h+=`<p class="note">Пройдите чтение и аудирование и нажмите «Проверить ответы», чтобы увидеть, сколько баллов нужно за письмо.</p>`;
+    h+=`<p class="meta">Устная часть сдаётся отдельно: минимум 24 из 40.</p>`;
+  }else{
+    const r=s.cteni,l=s.poslech;
+    h+=meter('Čtení',r,20,r!=null?`<div class="meta">${r>=12?'✓ проходной уровень':'✗ ниже 60 %'}</div>`:'')+meter('Poslech',l,20,l!=null?`<div class="meta">${l>=12?'✓ проходной уровень':'✗ ниже 60 %'}</div>`:'')+meter('Psaní',null,20,'<div class="meta">Проверяет Татьяна</div>');
+    h+=`<p class="note">В CCE <b>каждую</b> часть нужно сдать минимум на 60 %. Если одна часть ниже, весь экзамен не сдан. На настоящем экзамене баллы пересчитываются в проценты, поэтому здесь результат ориентировочный.</p>`;
+  }
+  return h+`<div class="bar"><button class="btn s" data-goto="${cur.t==='tp'?'cce':'tp'}">Попробовать ${cur.t==='tp'?'CCE':'госэкзамен'}</button></div></section>`+cta()+renderHist();
+}
+
+/* ---------- check ---------- */
+function check(save=true){
+  const P=TESTS[cur.t].parts[cur.p];let sc=0;
+  P.tasks.forEach((t,ti)=>t.items.forEach((it,ii)=>{
+    const id=key(ti,ii),v=ans[id],el=document.querySelector(`[data-k="${id}"]`);if(!el)return;
+    let ok=false,right='';
+    if(it.t==='mc'){ok=v!=null&&+v===it.a;right=L[it.a]+' · '+it.o[it.a]}
+    else if(it.t==='tf'){ok=v===String(it.a);right=it.a?'ANO':'NE'}
+    else if(it.t==='sel'){ok=v===it.a;right=it.a}
+    else{ok=v!=null&&it.a.map(norm).includes(norm(v));right=it.a[0]}
+    if(ok)sc++;
+    el.classList.remove('ok','bad');el.classList.add(ok?'ok':'bad');
+    el.querySelector('.res').textContent=ok?'✓ Верно':'✗ Правильно: '+right;
+  }));
+  $('#main').classList.add('checked');
+  document.querySelectorAll('details.tr[data-tr]').forEach(d=>d.hidden=false);
+  $('#score').textContent=`${sc} / ${P.max} · ${Math.round(sc/P.max*100)} %`;
+  scores[cur.t][P.id]=sc;st.set('scores',scores);
+  const slot=$('#ctaslot');if(slot&&!slot.innerHTML)slot.innerHTML=cta();
+  if(save){track('проверка',{test:TCODE[cur.t],part:P.title,score:sc,max:P.max});st.set('shown:'+cur.t+P.id,true);const h=st.get('hist',[]);h.push({d:Date.now(),t:cur.t,p:P.id,s:sc,m:P.max});st.set('hist',h.slice(-60))}
+}
+function reset(){
+  const P=TESTS[cur.t].parts[cur.p];
+  Object.keys(ans).forEach(k=>{if(k.startsWith(cur.t+'-'+P.id+'-'))delete ans[k]});
+  Object.keys(plays).forEach(k=>{if(k.startsWith(cur.t+'-'+P.id+'-'))delete plays[k]});
+  delete scores[cur.t][P.id];st.set('ans',ans);st.set('scores',scores);st.set('shown:'+cur.t+P.id,false);
+  $('#main').classList.remove('checked');render();window.scrollTo({top:0});
+}
+
+/* ---------- writing ---------- */
+function updWC(ta){const n=words(ta.value),min=+ta.dataset.min,zero=+ta.dataset.zero,el=document.querySelector(`[data-wc="${ta.name}"]`);if(!el)return;
+  el.textContent=`Слов: ${n} / минимум ${min}`+(n>0&&n<zero&&zero!==min?' — пока меньше порога, за такой текст 0 баллов':'');el.className='wc '+(n>=min?'ok':n>0?'low':'')}
+function buildMsg(){
+  const P=TESTS[cur.t].parts[cur.p],name=($('#sname')||{}).value||'';
+  let m=`Модельный тест А2 — ${NAMES[cur.t]}\nПисьменная часть (Psaní) на проверку\nИмя: ${name.trim()||'—'}\nАвтопроверка: ${scoreLine(cur.t)}\n`;
+  P.tasks.forEach((t,ti)=>{m+=`\nÚloha ${t.n}\n`;t.fields.forEach((f,fi)=>{const v=(ans[key(ti,fi)]||'').trim();m+=(t.fields.length>1?`${fi+1}) ${f.q}\n`:'')+(v||'—')+`\n(${words(v)} слов)\n`})});
+  return m;
+}
+async function copyMsg(m,stEl){const isRes=!!m;m=m||buildMsg();const ta=isRes?null:$('#msg');if(ta)ta.value=m;stEl=stEl||$('#status');
+  try{await navigator.clipboard.writeText(m);if(stEl)stEl.textContent='Текст скопирован ✓ Вставьте его в чат с Татьяной.';return true}
+  catch(e){if(ta){ta.closest('details').open=true;ta.select()}if(stEl)stEl.textContent=ta?'Не удалось скопировать автоматически. Скопируйте текст ниже вручную.':'Не удалось скопировать автоматически. Напишите Татьяне свой результат: '+scoreLine(cur.t);return false}}
+let lastField=null;
+document.addEventListener('focusin',e=>{if(e.target.matches('input[type=text]:not(#sname),textarea:not([readonly])'))lastField=e.target});
+document.addEventListener('mousedown',e=>{if(e.target.closest('.kbd .k'))e.preventDefault()});
+function typeCh(btn){const kb=btn.closest('.kbd');if(btn.dataset.sh){kb.classList.toggle('up');kb.querySelectorAll('[data-ch]').forEach(b=>b.textContent=kb.classList.contains('up')?b.dataset.ch.toUpperCase():b.dataset.ch);return}
+  let f=lastField;const scope=kb.closest('section');if(!f||!scope.contains(f)){const prev=kb.previousElementSibling;f=(prev&&prev.matches&&prev.matches('.wc')?prev.previousElementSibling.querySelector('textarea'):null)||scope.querySelector('input[type=text],textarea')}
+  if(!f)return;const ch=kb.classList.contains('up')?btn.dataset.ch.toUpperCase():btn.dataset.ch;f.focus();const a=f.selectionStart??f.value.length,b=f.selectionEnd??a;f.setRangeText(ch,a,b,'end');f.dispatchEvent(new Event('input',{bubbles:true}));if(kb.classList.contains('up'))typeCh(kb.querySelector('[data-sh]'))}
+
+/* ---------- timer ---------- */
+let tInt=null;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function stopTimer(){clearInterval(tInt);tInt=null}
+function toggleTimer(b){
+  if(tInt){stopTimer();b.classList.remove('run');return}
+  b.classList.add('run');
+  tInt=setInterval(()=>{let s=+b.dataset.sec-1;if(s<=0){s=0;stopTimer();b.textContent='⏱ Время вышло';b.classList.remove('run');return}b.dataset.sec=s;b.textContent='⏱ '+fmt(s)},1000);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const tt=e.target.closest('.ttab');if(tt){cur={t:tt.dataset.t,p:0};location.hash=tt.dataset.t;render();return}
+  const go=e.target.closest('[data-goto]');if(go){cur={t:go.dataset.goto,p:0};location.hash=cur.t;render();window.scrollTo({top:0});return}
+  const pt=e.target.closest('.tab');if(pt){if(hasTTS)speechSynthesis.cancel();cur.p=+pt.dataset.p;$('#main').classList.remove('checked');render();return}
+  const pb=e.target.closest('[data-play]');if(pb){const id=pb.dataset.play;plays[id]=(plays[id]||0)+1;pb.querySelector('span').textContent=`(${plays[id]}/2)`;if(plays[id]>=2)pb.disabled=true;speak(AUDIO[id],pb);return}
+  if(e.target.id==='check'){check();return}
+  if(e.target.id==='reset'){reset();return}
+  if(e.target.closest('#timer')){toggleTimer(e.target.closest('#timer'));return}
+  const kk=e.target.closest('.kbd .k');if(kk){typeCh(kk);return}
+  if(e.target.id==='clearhist'){st.set('hist',st.get('hist',[]).filter(x=>x.t!==cur.t));render();return}
+  const sr=e.target.closest('[data-sendres]');if(sr){const c=sr.closest('.cta');const nm=c.querySelector('.cname');if(nm)st.set('name',nm.value);track('результат отправлен',{test:TCODE[cur.t],name:nm?nm.value:'',score:Object.values(scores[cur.t]||{}).reduce((a,b)=>a+b,0)});copyMsg(resMsg(),c.querySelector('.status'));return}
+  if(e.target.id==='copy'){copyMsg();return}
+  if(e.target.closest('#send')){track('письмо отправлено',{test:TCODE[cur.t],part:'Psaní',name:($('#sname')||{}).value||''});copyMsg();return}
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='sname'||el.classList.contains('cname')){st.set('name',el.value);return}
+  if(!el.name)return;
+  ans[el.name]=el.type==='radio'?el.value:el.value;st.set('ans',ans);
+  if(el.tagName==='TEXTAREA')updWC(el);
+});
+document.addEventListener('change',e=>{const el=e.target;if(el.type==='radio'||el.tagName==='SELECT'){ans[el.name]=el.value;st.set('ans',ans)}});
+const fromHash=()=>{const h=location.hash.slice(1);if(h==='tp'||h==='cce'){cur={t:h,p:0}}};
+window.addEventListener('hashchange',()=>{fromHash();render()});
+fromHash();render();
+new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i++;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe($('#main'),{childList:true,subtree:true});
+new MutationObserver(()=>document.querySelectorAll('textarea[data-min]').forEach(t=>{if(!t.dataset.w){t.dataset.w=1;updWC(t)}})).observe($('#main'),{childList:true});
+document.querySelectorAll('textarea[data-min]').forEach(t=>{t.dataset.w=1;updWC(t)});
+}
+</script>
+</body>
+</html>
